@@ -200,7 +200,7 @@
     // === CONFIG — set these before deploying ===
     const CONFIG = {
       joinFormUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfvwL-x3MVBbJF0224pfBvAjxx9wtEntO7QTMXQDdVkuWx89Q/viewform?usp=dialog", // <-- your Google Form
-      peopleJson:  "https://script.google.com/macros/s/AKfycbxE8m90Rn9rBQ9uNjLX3SAnYjK834ZD7h2Od6rahUajGyCSBuNT5WXa-Pzo0WtOIZVJPw/exec",
+      peopleJson:  "https://script.google.com/macros/s/AKfycbzCt9y0Go_iUZZI6P_-O1O-Gb3EiRDA3ToNTBY8H2eM4FBl2fBIwHFdW-Jr6BLOEsj-Nw/exec",
       jobsJson:    "data/jobs.json",
     };
 
@@ -227,15 +227,23 @@
     if(['home','alumnis','jobs','impact'].includes(initHash)) switchTab(initHash);
 
     // Fetch JSON helpers with graceful fallback
-    async function fetchJson(url){
-      try{
-        const res = await fetch(url, {cache:'no-store'});
-        if(!res.ok) throw new Error(res.status+" "+res.statusText);
-        return await res.json();
-      }catch(e){
-        console.warn('Falling back to sample for', url, e);
-        return sampleData[url] || [];
-      }
+    function fetchJsonp(url) {
+      return new Promise((resolve, reject) => {
+        const cbName = '_cb_' + Math.random().toString(36).slice(2);
+        const script = document.createElement('script');
+        window[cbName] = (data) => {
+          resolve(data);
+          delete window[cbName];
+          script.remove();
+        };
+        script.onerror = () => {
+          reject(new Error('JSONP failed'));
+          delete window[cbName];
+          script.remove();
+        };
+        script.src = `${url}?callback=${cbName}`;
+        document.head.appendChild(script);
+      });
     }
 
     // Render Directory
