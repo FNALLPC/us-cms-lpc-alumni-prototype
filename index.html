@@ -200,7 +200,7 @@
     // === CONFIG — set these before deploying ===
     const CONFIG = {
       joinFormUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfvwL-x3MVBbJF0224pfBvAjxx9wtEntO7QTMXQDdVkuWx89Q/viewform?usp=dialog", // <-- your Google Form
-      peopleJson:  "https://script.google.com/macros/s/AKfycbzCt9y0Go_iUZZI6P_-O1O-Gb3EiRDA3ToNTBY8H2eM4FBl2fBIwHFdW-Jr6BLOEsj-Nw/exec",
+      peopleJson:  "https://script.google.com/macros/s/AKfycbzgnhfYIJ_EhztFgsx2p4ArEeY9Sjlh7kK-CE3V5a_ACh-eYPTxODO8IuqrJx0_j2H2eQ/exec",
       jobsJson:    "data/jobs.json",
     };
 
@@ -264,6 +264,7 @@
       const contactable = document.getElementById('filter-contactable').checked;
 
       const filtered = PEOPLE.filter(p=>{
+        if (!p.contact_ok || p.contact_ok === "no") return false;
         if(sector && p.sector!==sector) return false;
         if(loc && (p.location||'')!==loc) return false;
         if(contactable && !p.contact_ok) return false;
@@ -285,7 +286,9 @@
           <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
             ${p.linkedin?`<a class="btn" target="_blank" rel="noopener" href="${encodeURI(p.linkedin)}"><i class='ti ti-brand-linkedin'></i> LinkedIn</a>`:''}
             ${p.orcid?`<a class="btn" target="_blank" rel="noopener" href="https://orcid.org/${encodeURIComponent(p.orcid)}"><i class='ti ti-id'></i> ORCID</a>`:''}
-            ${p.contact_ok && p.email?`<a class="btn" href="mailto:${encodeURI(p.email)}"><i class='ti ti-mail'></i> Contact</a>`:''}
+            ${p.contact_ok === "full" && p.email
+              ? `<a class="btn" href="mailto:${encodeURI(p.email)}"><i class='ti ti-mail'></i> Contact</a>`
+              : ''}            
           </div>
           ${p.placement?`<div class="tags" style="margin-top:10px">
               <span class="pill" title="Placement sector">${p.placement.sector==='industry'?'🏢':'🏫'} ${escapeHtml(capitalize(p.placement.sector))}</span>
