@@ -226,6 +226,16 @@
     const initHash = (location.hash||'').replace('#','');
     if(['home','alumnis','jobs','impact'].includes(initHash)) switchTab(initHash);
 
+    async function fetchJson(url){
+      try{
+        const res = await fetch(url, {cache:'no-store'});
+        if(!res.ok) throw new Error(res.status+" "+res.statusText);
+        return await res.json();
+      }catch(e){
+        console.warn('Could not load', url, e);
+        return [];
+      }
+    }    
     // Fetch JSON helpers with graceful fallback
     function fetchJsonp(url) {
       return new Promise((resolve, reject) => {
@@ -405,7 +415,7 @@
 
     // Boot: load data & render
     (async function(){
-      PEOPLE = await fetchJson(CONFIG.peopleJson);
+      PEOPLE = await fetchJsonp(CONFIG.peopleJson);
       JOBS = await fetchJson(CONFIG.jobsJson);
       populateLocationFilter();
       renderDirectory();
