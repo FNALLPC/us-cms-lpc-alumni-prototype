@@ -197,6 +197,66 @@
   </footer>
 
   <script>
+    // Column titles from the Google Sheet → people.json field names.
+    // All parsing, normalisation, and deduplication happens here in the browser.
+    const COLUMN_MAP = {
+      'Full Name':                                         'name',
+      'Email (non-CERN)':                                  'email',
+      'Appear in the public alumni list on the website':   'contact_ok',
+      'Current organization':                              'org',
+      'Current role / title':                              'role',
+      'Sector':                                            'sector',
+      'Location (City, State)':                            'location',
+      'Skills (comma-separated)':                          'skills',
+      'Linkedin':                                          'linkedin',
+      'ORCID':                                             'orcid',
+      'Placement Date':                                    'placement_date',
+      'Placement Sector':                                  'placement_sector',
+    };
+
+    function processPeople(rawRows) {
+      const all = rawRows.map(row => {
+        const entry = {};
+        for (const [col, field] of Object.entries(COLUMN_MAP)) {
+          let val = row[col] ?? '';
+          if (field === 'contact_ok') {
+            if (val.startsWith('Yes, show my name'))         val = 'full';
+            else if (val.startsWith('Yes, show my profile')) val = 'hidden';
+            else                                              val = 'no';
+          } else if (field === 'skills') {
+            val = String(val).split(',').map(s => s.trim()).filter(Boolean);
+          } else if (field === 'sector') {
+            val = val.toLowerCase().replace('gov/lab', 'govlab');
+          }
+          entry[field] = val;
+        }
+
+        const pDate   = entry.placement_date   || '';
+        const pSector = entry.placement_sector || '';
+        delete entry.placement_date;
+        delete entry.placement_sector;
+        entry.placement = (pDate && pSector && pSector.toLowerCase() !== 'n/a')
+          ? { date: formatDate(pDate), sector: pSector.toLowerCase().replace('gov/lab', 'govlab') }
+          : null;
+
+        return entry;
+      });
+
+      // Deduplicate — last submission per email (or name) wins
+      const seen = {};
+      for (const person of all) {
+        const key = (person.email || person.name || '').toLowerCase().trim();
+        if (key) seen[key] = person;
+      }
+      return Object.values(seen);
+    }
+
+    function formatDate(val) {
+      if (!val) return '';
+      if (val instanceof Date) return val.toISOString().slice(0, 10);
+      return String(val).slice(0, 10);
+    }
+
     // === CONFIG — set these before deploying ===
     const CONFIG = {
       joinFormUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfvwL-x3MVBbJF0224pfBvAjxx9wtEntO7QTMXQDdVkuWx89Q/viewform?usp=dialog", // <-- your Google Form
@@ -418,7 +478,7 @@
 
     // Boot: load data & render
     (async function(){
-      PEOPLE = await fetchJsonp(CONFIG.peopleJson);
+      PEOPLE = processPeople(await fetchJsonp(CONFIG.peopleJson));
       JOBS = await fetchJson(CONFIG.jobsJson);
       populateLocationFilter();
       renderDirectory();
