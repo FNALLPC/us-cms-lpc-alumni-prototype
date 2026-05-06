@@ -86,7 +86,7 @@
     }
     .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid rgba(0,0,0,0.12);color:var(--muted)}
     .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
-    .person{padding:14px;border-radius:14px;border:1px solid rgba(0,0,0,0.1);background:var(--surface)}
+    .person{padding:14px;border-radius:14px;border:1px solid rgba(0,0,0,0.1);background:var(--surface);max-width:400px}
     .person h4{margin:0 0 6px}
     .meta{color:var(--muted);font-size:13px}
     .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
@@ -257,6 +257,12 @@
       return String(val).slice(0, 10);
     }
 
+    function monthYear(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr + 'T00:00:00');
+      return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    }
+
     // === CONFIG — set these before deploying ===
     const CONFIG = {
       joinFormUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfvwL-x3MVBbJF0224pfBvAjxx9wtEntO7QTMXQDdVkuWx89Q/viewform?usp=dialog", // <-- your Google Form
@@ -352,7 +358,7 @@
           </div>
           ${p.placement?`<div class="tags" style="margin-top:10px">
               <span class="pill" title="Placement sector">${p.placement.sector==='industry'?'🏢':'🏫'} ${escapeHtml(capitalize(p.placement.sector))}</span>
-              <span class="pill" title="Placement date">📅 ${escapeHtml(p.placement.date)}</span>
+              <span class="pill" title="Placement date">📅 ${escapeHtml(monthYear(p.placement.date))}</span>
             </div>`:''}
         `;
         list.appendChild(el);
