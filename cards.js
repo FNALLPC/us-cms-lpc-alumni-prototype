@@ -10,10 +10,12 @@ function capitalize(s) {
 
 function monthYear(dateStr) {
   if (!dateStr) return '';
+  // Already MM/YYYY — return as-is
+  if (/^\d{1,2}\/\d{4}$/.test(String(dateStr))) return dateStr;
+  // YYYY-MM-DD or JS Date object
   const d = new Date(dateStr + 'T00:00:00');
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const yyyy = d.getFullYear();
-  return `${mm}/${yyyy}`;
+  if (isNaN(d)) return String(dateStr); // unrecognised format — show raw value
+  return `${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
 }
 
 function personCard(p) {
