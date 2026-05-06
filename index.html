@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.13.0/tabler-icons.min.css">
   <!-- Chart.js for the cumulative impact plot -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="cards.js"></script>
   <style>
     :root{
       /* Light theme knobs */
@@ -342,26 +343,7 @@
       const list = document.getElementById('people-list');
       list.innerHTML = '';
       for(const p of filtered){
-        const el = document.createElement('div');
-        el.className='person';
-        el.innerHTML = `
-          <h4>${escapeHtml(p.name)}</h4>
-          <div class="meta">${escapeHtml(p.role||'')} at ${escapeHtml(p.org||'')}</div>
-          <div class="meta">${escapeHtml(p.location||'')}</div>
-          <div class="tags">${(p.skills||[]).slice(0,8).map(t=>`<span class="pill">${escapeHtml(t)}</span>`).join('')}</div>
-          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-            ${p.linkedin?`<a class="btn" target="_blank" rel="noopener" href="${encodeURI(p.linkedin)}"><i class='ti ti-brand-linkedin'></i> LinkedIn</a>`:''}
-            ${p.orcid?`<a class="btn" target="_blank" rel="noopener" href="https://orcid.org/${encodeURIComponent(p.orcid)}"><i class='ti ti-id'></i> ORCID</a>`:''}
-            ${p.contact_ok === "full" && p.email
-              ? `<a class="btn" href="mailto:${encodeURI(p.email)}"><i class='ti ti-mail'></i> Contact</a>`
-              : ''}            
-          </div>
-          ${p.placement?`<div class="tags" style="margin-top:10px">
-              <span class="pill" title="Placement sector">${p.placement.sector==='industry'?'🏢':'🏫'} ${escapeHtml(capitalize(p.placement.sector))}</span>
-              <span class="pill" title="Placement date">📅 ${escapeHtml(monthYear(p.placement.date))}</span>
-            </div>`:''}
-        `;
-        list.appendChild(el);
+        list.appendChild(personCard(p));
       }
     }
 
@@ -478,9 +460,7 @@
       document.getElementById('kpi-placements').textContent = placed12m;
     }
 
-    // Utilities
-    function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m])); }
-    function capitalize(s){ return (s||'').charAt(0).toUpperCase()+s.slice(1); }
+    // Utilities (escapeHtml, capitalize, monthYear live in cards.js)
 
     // Boot: load data & render
     (async function(){

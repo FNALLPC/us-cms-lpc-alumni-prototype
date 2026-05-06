@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.13.0/tabler-icons.min.css">
+  <script src="cards.js"></script>
   <style>
     :root{
       --bg: #ffffff;
@@ -51,25 +52,16 @@
 
     main{max-width:1100px;margin:32px auto;padding:0 28px}
 
-    h2{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin:0 0 8px}
+    h2{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin:0 0 10px}
 
-    /* Three cards side by side */
     .row{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:start}
 
-    .col h2{margin-bottom:10px}
-
-    .person{padding:14px;border-radius:14px;border:1px solid rgba(0,0,0,0.1);background:var(--surface)}
+    /* Shared card styles (kept in sync with index.html) */
+    .person{padding:14px;border-radius:14px;border:1px solid rgba(0,0,0,0.1);background:var(--surface);max-width:400px}
     .person h4{margin:0 0 6px}
     .meta{color:var(--muted);font-size:13px}
     .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-
-    /* Unified pill — used for skills, placement, AND action links */
-    .pill{
-      display:inline-flex;align-items:center;gap:5px;
-      padding:4px 10px;border-radius:999px;font-size:12px;
-      border:1px solid rgba(0,0,0,0.12);color:var(--muted);
-      background:var(--surface);
-    }
+    .pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid rgba(0,0,0,0.12);color:var(--muted);background:var(--surface)}
     a.pill{color:var(--link)}
     a.pill:hover{border-color:rgba(2,132,199,0.6);text-decoration:none}
 
@@ -81,10 +73,7 @@
     .label-hidden {background:#fef9c3;color:#854d0e}
     .label-no     {background:#fee2e2;color:#b91c1c}
 
-    .redacted{
-      display:inline-block;background:#e5e7eb;border-radius:4px;
-      color:transparent;user-select:none;
-    }
+    .redacted{display:inline-block;background:#e5e7eb;border-radius:4px;color:transparent;user-select:none}
 
     footer{color:var(--muted);font-size:13px;margin:50px 0 24px;text-align:center}
   </style>
@@ -103,79 +92,78 @@
 
 <main>
   <div class="row">
-
-    <!-- FULL CONTACT -->
     <div class="col">
       <h2>Full contact — <code>"full"</code></h2>
-      <div class="person">
-        <span class="label-badge label-full">Full contact</span>
-        <h4>Alex Chen</h4>
-        <div class="meta">💼 Research Scientist at NVIDIA</div>
-        <div class="meta">📍 San Francisco, CA</div>
-        <div class="tags">
-          <span class="pill">ML</span>
-          <span class="pill">CUDA</span>
-          <span class="pill">HEP</span>
-          <span class="pill">Tracking</span>
-        </div>
-        <div class="tags">
-          <a class="pill" href="#"><i class="ti ti-brand-linkedin"></i> LinkedIn</a>
-          <a class="pill" href="#"><i class="ti ti-id"></i> ORCID</a>
-          <a class="pill" href="#"><i class="ti ti-mail"></i> Contact</a>
-        </div>
-        <div class="tags">
-          <span class="pill">🏢 Industry</span>
-          <span class="pill">📅 Mar 2025</span>
-        </div>
-      </div>
+      <div id="card-full"></div>
     </div>
-
-    <!-- PROFILE ONLY -->
     <div class="col">
       <h2>Profile only — <code>"hidden"</code></h2>
-      <div class="person">
-        <span class="label-badge label-hidden">Profile only</span>
-        <h4>Priya Patel</h4>
-        <div class="meta">💼 Postdoctoral Associate at MIT</div>
-        <div class="meta">📍 Cambridge, MA</div>
-        <div class="tags">
-          <span class="pill">Jet physics</span>
-          <span class="pill">Flavour tagging</span>
-          <span class="pill">ROOT</span>
-        </div>
-        <div class="tags">
-          <a class="pill" href="#"><i class="ti ti-brand-linkedin"></i> LinkedIn</a>
-          <!-- No Contact — email not shown -->
-        </div>
-        <div class="tags">
-          <span class="pill">🏫 Academia</span>
-          <span class="pill">📅 Nov 2024</span>
-        </div>
-      </div>
+      <div id="card-hidden"></div>
     </div>
-
-    <!-- NON-PUBLIC -->
     <div class="col">
       <h2>Non-public — <code>"no"</code></h2>
-      <div class="person" style="opacity:0.5">
-        <span class="label-badge label-no">Not listed</span>
-        <h4><span class="redacted">████████████</span></h4>
-        <div class="meta">💼 <span class="redacted">████████████████████████</span></div>
-        <div class="meta">📍 <span class="redacted">███████████</span></div>
-        <div class="tags">
-          <span class="pill" style="color:transparent;background:#e5e7eb;border-color:transparent">████████</span>
-          <span class="pill" style="color:transparent;background:#e5e7eb;border-color:transparent">████</span>
-        </div>
-        <div class="tags" style="margin-top:10px">
-          <span class="pill"><i class="ti ti-eye-off"></i> Hidden from directory</span>
-        </div>
-      </div>
+      <div id="card-no"></div>
     </div>
-
   </div>
 </main>
 
 <footer>Card examples for the US‑CMS / LPC Alumni Network.</footer>
+
+<script>
+  const samples = {
+    full: {
+      name: 'Alex Chen',
+      email: 'alex.chen@example.com',
+      contact_ok: 'full',
+      org: 'NVIDIA',
+      role: 'Research Scientist',
+      sector: 'industry',
+      location: 'San Francisco, CA',
+      skills: ['ML', 'CUDA', 'HEP', 'Tracking'],
+      linkedin: 'https://www.linkedin.com/in/example',
+      orcid: '0000-0002-1234-5678',
+      placement: { date: '2025-03-10', sector: 'industry' },
+    },
+    hidden: {
+      name: 'Priya Patel',
+      email: '',
+      contact_ok: 'hidden',
+      org: 'MIT',
+      role: 'Postdoctoral Associate',
+      sector: 'academia',
+      location: 'Cambridge, MA',
+      skills: ['Jet physics', 'Flavour tagging', 'ROOT'],
+      linkedin: 'https://www.linkedin.com/in/example',
+      orcid: null,
+      placement: { date: '2024-11-08', sector: 'academia' },
+    },
+  };
+
+  // Full and hidden — rendered by personCard()
+  const fullCard = personCard(samples.full);
+  fullCard.insertAdjacentHTML('afterbegin', '<span class="label-badge label-full">Full contact</span>');
+  document.getElementById('card-full').appendChild(fullCard);
+
+  const hiddenCard = personCard(samples.hidden);
+  hiddenCard.insertAdjacentHTML('afterbegin', '<span class="label-badge label-hidden">Profile only</span>');
+  document.getElementById('card-hidden').appendChild(hiddenCard);
+
+  // Non-public — illustrative only (never rendered by personCard in practice)
+  document.getElementById('card-no').innerHTML = `
+    <div class="person" style="opacity:0.5;max-width:400px">
+      <span class="label-badge label-no">Not listed</span>
+      <h4><span class="redacted">████████████</span></h4>
+      <div class="meta">💼 <span class="redacted">████████████████████████</span></div>
+      <div class="meta">📍 <span class="redacted">███████████</span></div>
+      <div class="tags">
+        <span class="pill" style="color:transparent;background:#e5e7eb;border-color:transparent">████████</span>
+        <span class="pill" style="color:transparent;background:#e5e7eb;border-color:transparent">████</span>
+      </div>
+      <div class="tags">
+        <span class="pill"><i class="ti ti-eye-off"></i> Hidden from directory</span>
+      </div>
+    </div>`;
+</script>
 
 </body>
 </html>
